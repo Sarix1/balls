@@ -206,7 +206,7 @@ def draw_circle(x, y, radius, r, g, b, target_pixels, shaded):
                     
                     # shaded == 0 is not shaded at all, plain colour
 
-                    # please not that we have to calculate a new shaded colour for each pixel,
+                    # please note that we have to calculate a new shaded colour for each pixel,
                     # while preserving the original r, g, b values; hence we need the new_r, new_g, new_b variables
                     new_r = r - int(shaded * r * (distance_squared / radius_squared))
                     new_g = g - int(shaded * g * (distance_squared / radius_squared))
