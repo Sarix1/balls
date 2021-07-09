@@ -330,6 +330,9 @@ def run():
         ######################## 1. GET INPUT & PROCESS EVENTS ####################################
         # get player input into Ball1.controller and check events for quitting,
         # set running to False if quit, otherwise True
+        # control input could also be stored to some kind of global_controller object,
+        # such as when you want to control a menu, or copy input from a global object
+        # to multiple balls and other things, to simultaneously control many things
         running = process_events(Ball1.controller)
 
 
