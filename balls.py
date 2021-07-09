@@ -40,12 +40,12 @@ class Ball:
         self.y            = y
         self.size         = size
         self.radius       = size / 2.0
-        self.bounce_x     = bounce
-        self.bounce_y     = bounce
-        self.accelerate   = accelerate
-        self.max_move_vel = max_move_vel
-        self.jump_vel     = jump_vel
-        self.floating     = 0 # determines whether the object is floating in air or standing on the bottom edge of the screen border
+        self.bounce_x     = bounce          # assigned from global default value; x axis bounce-back
+        self.bounce_y     = bounce          # assigned from global default value; y axis bounce-back
+        self.accelerate   = accelerate      # assigned from global default value; rate of increasing x velocity by controlling
+        self.max_move_vel = max_move_vel    # assigned from global default value; maximum velocity to apply when controlling
+        self.jump_vel     = jump_vel        # assigned from global default value; negative y velocity applied for jumping
+        self.floating     = 0               # determines whether the object is floating in air or standing on the bottom edge of the screen border
 
         # graphics
         # use the sprite which we got as an argument
@@ -162,7 +162,7 @@ def draw_circle(x, y, radius, r, g, b, target_pixels, shaded):
 
     # turn a flag on to create an extra pixel if the circle radius would produce even numbered coordinates
     # (e.g. if the circle is 100 x 100, it must have 4 pixels in the middle)
-    # % 1 gets the fractional part of any number, abs() gets the absolute value (e.g. -0.1 becomes 0.1)
+    # % 1 gets the fractional part of any number (e.g. 10.75 gives 0.75), abs() gets the absolute value (e.g. -0.1 becomes 0.1)
     # k must be 1 for even numbered, and 0 for odd numbered coordinates
     if abs((radius % 1) - 0.5) < 0.5:
         k = 0
@@ -179,10 +179,10 @@ def draw_circle(x, y, radius, r, g, b, target_pixels, shaded):
     new_g = g
     new_b = b
 
-    # squared radius for an optimization trick; explained bloe
+    # squared radius for an optimization trick; explained below
     radius_squared = radius**2
     
-    # process each pixel in a squrae area; one quadrant of an image
+    # process each pixel in a squrae area; not the whole pixel area of the ball, just one quadrant of it
     for y_pix in range (0, radius):
         for x_pix in range (0, radius):
             # get each pixel's distance from the square's centre
@@ -196,13 +196,14 @@ def draw_circle(x, y, radius, r, g, b, target_pixels, shaded):
             if distance_squared < radius_squared:
                 # if the circle is shaded, modify r,g,b values using distance/radius ratio and shaded modifier
                 if shaded != 0:
-                    # shaded == 1 is totally shaded, black near edges
-                    # (think like: 1*100% of red is reduced from red if distance/radius == 1.0)
-                    # (think like: 1*50% of red is reduced from red if distance/radius == 0.5)
+                    # shaded == 1 gives a fully shaded ball, almost black near edges
+                    # (think like: 1 * 100% of red is reduced from red if distance/radius == 1.0)
+                    # (think like: 1 * 50% of red is reduced from red if distance/radius == 0.5)
 
-                    # shaded == 0.5 is half-shaded, half-brightness near edges
-                    # (think like: 0.5*100% == 50% of red is reduced from red if distance/radius == 1.0)
-                    # (think like: 0.5*50% == 25% of red is reduced from red if distance/radius == 0.5)
+                    # shaded == 0.5 gives a half-shaded ball, which has half-brightness of original colour near the edges
+                    # (think like: 0.5 * 100% == 50% of red is reduced from red if distance/radius == 1.0)
+                    # (think like: 0.5 * 50% == 25% of red is reduced from red if distance/radius == 0.5)
+                    
                     # shaded == 0 is not shaded at all, plain colour
 
                     # please not that we have to calculate a new shaded colour for each pixel,
@@ -215,7 +216,6 @@ def draw_circle(x, y, radius, r, g, b, target_pixels, shaded):
                 # we do the math above for one quadrant of the image, but write a mirrored pixel into all four quadrants
                 # since the circle image is symmetrical on x and y axes, this saves time and processing power
                 # you could even calculate just 1 octant and draw 8 pixels in all octants, but that would overcomplicate the code for this example
-                error = 0
 
                 try:
                     target_pixels[y - y_pix - k][x - x_pix - k] = sdl2.ext.Color(new_r, new_g, new_b)
